@@ -1104,6 +1104,7 @@ int ac108_audio_startup(struct snd_pcm_substream *substream,
 	if (ac10x->i2c101) {
 		return ac101_audio_startup(substream, dai);
 	}
+	ac10x->sysclk_en = 0;
 	ac108_set_clock(1);
 	return 0;
 }
