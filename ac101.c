@@ -1406,7 +1406,7 @@ int ac101_codec_probe(struct snd_soc_codec *codec)
 	mutex_init(&ac10x->dac_mutex);
 
 	#if _MASTER_MULTI_CODEC == _MASTER_AC101
-	seeed_voice_card_register_set_clock(SNDRV_PCM_STREAM_PLAYBACK, ac101_set_clock);
+	//seeed_voice_card_register_set_clock(SNDRV_PCM_STREAM_PLAYBACK, ac101_set_clock);
 	#endif
 
 	set_configuration(ac10x->codec);

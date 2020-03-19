@@ -799,6 +799,11 @@ static int ac108_hw_params(struct snd_pcm_substream *substream, struct snd_pcm_h
 	/*0x22: Module reset de-asserted<I2S, ADC digital, MIC offset Calibration, ADC analog>*/
 	ac108_multi_write(MOD_RST_CTRL, 1 << I2S | 1 << ADC_DIGITAL | 1 << MIC_OFFSET_CALIBRATION | 1 << ADC_ANALOG, ac10x);
 
+	/* Restore LRCK setting */
+        ac10x_read(I2S_CTRL, &v, ac10x->i2cmap[_MASTER_INDEX]);
+        if (v & (0x01 << BCLK_IOEN)) {
+                ac10x_update_bits(I2S_CTRL, 0x1 << LRCK_IOEN, 0x1 << LRCK_IOEN, ac10x->i2cmap[_MASTER_INDEX]);
+        }
 
 	dev_dbg(dai->dev, "%s() stream=%s ---\n", __func__,
 			snd_pcm_stream_str(substream));
@@ -1099,6 +1104,7 @@ int ac108_audio_startup(struct snd_pcm_substream *substream,
 	if (ac10x->i2c101) {
 		return ac101_audio_startup(substream, dai);
 	}
+	ac108_set_clock(1);
 	return 0;
 }
 
@@ -1469,7 +1475,7 @@ __ret:
 	/* It's time to bind codec to i2c[_MASTER_INDEX] when all i2c are ready */
 	if ((ac10x->codec_cnt != 0 && ac10x->tdm_chips_cnt < 2)
 	|| (ac10x->i2c[0] && ac10x->i2c[1] && ac10x->i2c101)) {
-		seeed_voice_card_register_set_clock(SNDRV_PCM_STREAM_CAPTURE, ac108_set_clock);
+		// seeed_voice_card_register_set_clock(SNDRV_PCM_STREAM_CAPTURE, ac108_set_clock);
 		/* no playback stream */
 		if (! ac10x->i2c101) {
 			memset(&ac108_dai[_MASTER_INDEX]->playback, '\0', sizeof ac108_dai[_MASTER_INDEX]->playback);
