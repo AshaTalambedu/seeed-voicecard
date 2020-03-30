@@ -1,38 +1,49 @@
-NOTE: Only Respeaker 4-Mic Array (one codec instance at a time) is verified on Jetson platform with the help of this driver
+NOTE: Only Respeaker 4-Mic Array (one codec instance at a time) is verified on Jetson platform using below guidelines
 
+List of files used from jetson-respeaker-4mic-array-compatible branch of seeed-voicecard repo for Integrating Respeaker 4-Mic Array with Jetson Platforms:
 
-Steps for compiling the codec driver with Jetson kernel
+	seeed-voicecard/
+	├── ac101.c
+	├── ac101_regs.h
+	├── ac108.c
+	├── ac108.h
+	├── ac10x.h
+	├── jetson_BSP32.3.patch
+	├── README-jetson
+	└── sound-compatible-4.18.h
 
-1. Add following lines to sound/soc/codecs/Kconfig
+Steps for Integrating Respeaker 4-Mic Array with Jetson Platforms
 
-config SND_SOC_AC108_CODEC
-       tristate
-       default y
+1. Refer the patch provided as part of the repo for patching kernel
 
+	Patch for L4T 32.3.1 (part of JetPack 4.3) - jetson_BSP32.3.patch
+        NOTE: Make sure to patch platform relevant DTs. 
 
-2. Add following lines to sound/soc/codecs/Makefile
+2. Copy following files from seeed-voicecard repo to kernel/nvidia/sound/soc/codecs
 
-snd-soc-ac108-objs := ac101.o ac108.o
-obj-$(CONFIG_SND_SOC_AC108_CODEC)       += snd-soc-ac108.o
+	ac108.h
+	ac108.c
+	ac101.c
+	ac101_regs.h
+	ac10x.h
+	sound-compatible-4.18.h
 
+3. Recompile kernel and flash updated kernel and dtb on Jetson and reboot
+(Kernel customisation on Jetson: https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%20Linux%20Driver%20Package%20Development%20Guide/kernel_custom.html)
 
-3. Copy following files from this repo to sound/soc/codecs
+4. Necessary pinmux configuration has to be done after reboot 
 
-ac108.h
-ac108.c
-ac101.c
-ac101_regs.h
-ac10x.h
-sound-compatible-4.18.h
+	Launch Jetson-IO (sudo /opt/nvidia/jetson-io/jetson-io.py)
+	Select “Configure 40‑pin expansion header”
+	Select “i2s” function
+	Select “Back”
+	Select “Save and reboot to reconfigure pins”
 
-4. Recompile kernel and flash updated kernel on Jetson and reboot
-(Links from Internet: https://developer.ridgerun.com/wiki/index.php?title=Jetson_Nano/Development/Building_the_Kernel_from_Source)
+5. Below script can be used to record 4 channel audio data
 
-5. If pinmiux config is in place, below script can be used to record 4 channel audio data
+	amixer -c 1 cset name="ADMAIF9 Mux" "I2S1"
+	amixer -c 1 cset name="I2S1 codec frame mode" "dsp-a"
+	amixer -c 1 cset name="I2S1 codec master mode" "cbm-cfm"
+	arecord -D hw:1,8 -r 16000 -c 4 -f S32_LE -t wav -d 10 ./out.wav &
 
-amixer -c 1 cset name="ADMAIF9 Mux" "I2S1"
-amixer -c 1 cset name="I2S1 codec frame mode" "dsp-a"
-amixer -c 1 cset name="I2S1 codec master mode" "cbm-cfm"
-arecord -D hw:1,8 -r 16000 -c 4 -f S32_LE -t wav -d 10 ./out.wav &
-
-NOTE: I2S Instance used depends on the Jetson platform varian
+	NOTE: I2S Instance used depends on the Jetson platform being used

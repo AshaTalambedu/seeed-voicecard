@@ -1,0 +1,332 @@
+diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-common.dtsi NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-common.dtsi
+--- NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-common.dtsi	2019-12-10 12:09:33.000000000 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t18x/common/kernel-dts/t18x-common-platforms/tegra186-quill-common.dtsi	2020-03-30 13:47:54.467046373 +0530
+@@ -217,7 +217,12 @@
+ 					238 239 240 241 242 244 245 246
+ 					247 248 249 250 251 253 254 255 >;
+ 		};
+-
++		ac108_a: ac10x-codec.1-003b@3b{
++			compatible = "x-power,ac108_0";
++			reg = <0x3b>;
++			data-protocol = <0>;
++			status = "okay";
++		};
+ 	};
+ 
+ 	vi-bypass@15700000{
+@@ -712,8 +717,15 @@
+ 
+ 		status = "okay";
+ 		nvidia,audio-routing =
+-			"x Headphone",		"x OUT",
+-			"x IN",			"x Mic",
++			"x MIC1N",              "x Mic",
++			"x MIC1P",              "x Mic",
++			"x MIC2N",              "x Mic",
++			"x MIC2P",              "x Mic",
++			"x MIC3N",              "x Mic",
++			"x MIC3P",              "x Mic",
++			"x MIC4N",              "x Mic",
++			"x MIC4P",              "x Mic",
++			"x Capture",            "x Mic";
+ 			"y Headphone",		"y OUT",
+ 			"y IN",			"y Mic",
+ 			"z Headphone",		"z OUT",
+@@ -735,15 +747,17 @@
+ 		mclk-fs = <256>;
+ 
+ 		rt565x_dai_link: nvidia,dai-link-1 {
+-			link-name = "spdif-dit-0";
++			link-name = "respeaker-4-mic-array";
+ 			cpu-dai = <&tegra_i2s1>;
+-			codec-dai = <&spdif_dit0>;
++			codec-dai = <&ac108_a>;
+ 			cpu-dai-name = "I2S1";
+-			codec-dai-name = "dit-hifi";
+-			format = "i2s";
+-			bit-format = "s16_le";
+-			srate = <48000>;
+-			num-channel = <2>;
++			codec-dai-name = "ac10x-codec0";
++			bitclock-master;
++			frame-master;
++			format = "dsp_a";
++			bit-format = "s32_le";
++			srate = <16000>;
++			num-channel = <4>;
+ 			ignore_suspend;
+ 			name-prefix = "x";
+ 			status = "okay";
+diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t19x/galen/kernel-dts/common/tegra194-audio-p2822-0000.dtsi NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t19x/galen/kernel-dts/common/tegra194-audio-p2822-0000.dtsi
+--- NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t19x/galen/kernel-dts/common/tegra194-audio-p2822-0000.dtsi	2019-12-10 12:09:34.000000000 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t19x/galen/kernel-dts/common/tegra194-audio-p2822-0000.dtsi	2020-03-30 15:51:02.856655374 +0530
+@@ -46,6 +46,14 @@
+ 		};
+ 	};
+ 
++	i2c@31e0000 {
++		ac108_a: ac10x-codec.1-003b@3b{
++			compatible = "x-power,ac108_0";
++			reg = <0x3b>;
++			data-protocol = <0>;
++			status = "okay";
++		};
++	};
+ 	/* Default for all I2S is long fsync width(31) */
+ 	aconnect@2a41000 {
+ 		ahub {
+@@ -87,8 +95,15 @@
+ 			"x DMIC L2",            "x Int Mic",
+ 			"x DMIC R1",            "x Int Mic",
+ 			"x DMIC R2",            "x Int Mic",
+-			"y Headphone",          "y OUT",
+-			"y IN",                 "y Mic",
++			"y MIC1N",              "y Mic",
++			"y MIC1P",              "y Mic",
++			"y MIC2N",              "y Mic",
++			"y MIC2P",              "y Mic",
++			"y MIC3N",              "y Mic",
++			"y MIC3P",              "y Mic",
++			"y MIC4N",              "y Mic",
++			"y MIC4P",              "y Mic",
++			"y Capture",            "y Mic";
+ 			"z Headphone",          "z OUT",
+ 			"z IN",                 "z Mic",
+ 			"m Headphone",          "m OUT",
+@@ -121,7 +136,17 @@
+ 				codec-dai-name = "rt5659-aif1";
+ 			};
+ 
+-			hdr40_snd_link_i2s: nvidia,dai-link-2 { };
++			hdr40_snd_link_i2s: nvidia,dai-link-2 { 
++				link-name = "respeaker-4-mic-array";
++				codec-dai = <&ac108_a>;
++				codec-dai-name = "ac10x-codec0";
++				format = "dsp_a";
++				srate = <16000>;
++				num-channel = <4>
++				bit-format = "s32_le";
++				bitclock-master;
++				frame-master;
++			};
+ 
+ 			/* Override with BT SCO entries */
+ 			nvidia,dai-link-4 {
+diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/jetson/kernel-dts/tegra210-jetson-cv-base-p2597-2180-a00.dts NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/jetson/kernel-dts/tegra210-jetson-cv-base-p2597-2180-a00.dts
+--- NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/jetson/kernel-dts/tegra210-jetson-cv-base-p2597-2180-a00.dts	2020-03-30 14:40:14.596658533 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/jetson/kernel-dts/tegra210-jetson-cv-base-p2597-2180-a00.dts	2020-03-30 14:40:37.058598692 +0530
+@@ -341,6 +341,15 @@
+ 		};
+ 	};
+ 
++	i2c@7000c000 {
++		ac108_a: ac10x-codec.1-003b@3b{
++			compatible = "x-power,ac108_0";
++			reg = <0x3b>;
++			data-protocol = <0>;
++			status = "okay";
++		};
++	}
++
+ 	serial@70006040 {
+ 		status = "okay";
+ 	};
+@@ -377,8 +386,15 @@
+ 		nvidia,num-codec-link = <8>;
+ 
+ 		nvidia,audio-routing =
+-			"x Headphone",		"x OUT",
+-			"x IN",			"x Mic",
++			"x MIC1N",              "x Mic",
++			"x MIC1P",              "x Mic",
++			"x MIC2N",              "x Mic",
++			"x MIC2P",              "x Mic",
++			"x MIC3N",              "x Mic",
++			"x MIC3P",              "x Mic",
++			"x MIC4N",              "x Mic",
++			"x MIC4P",              "x Mic",
++			"x Capture",            "x Mic";
+ 			"y Headphone",		"y OUT",
+ 			"y IN",			"y Mic",
+ 			"l Headphone",		"l OUT",
+@@ -395,15 +411,17 @@
+ 		mclk-fs = <256>;
+ 
+ 		hdr40_snd_link_i2s: nvidia,dai-link-1 {
+-			link-name = "spdif-dit-0";
++			link-name = "respeaker-4-mic-array";
+ 			cpu-dai = <&tegra_i2s1>;
+-			codec-dai = <&spdif_dit4>;
++			codec-dai = <&ac108_a>;
+ 			cpu-dai-name = "I2S1";
+-			codec-dai-name = "dit-hifi";
+-			format = "i2s";
+-			bit-format = "s16_le";
+-			srate = <48000>;
+-			num-channel = <2>;
++			codec-dai-name = "ac10x-codec0";
++			bitclock-master;
++			frame-master;
++			format = "dsp_a";
++			bit-format = "s32_le";
++			srate = <16000>;
++			num-channel = <4>;
+ 			name-prefix = "x";
+ 		};
+ 
+diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/porg/kernel-dts/tegra210-porg-p3448-common.dtsi NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/porg/kernel-dts/tegra210-porg-p3448-common.dtsi
+--- NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/porg/kernel-dts/tegra210-porg-p3448-common.dtsi	2020-03-30 14:41:13.754838001 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/porg/kernel-dts/tegra210-porg-p3448-common.dtsi	2020-03-30 14:41:28.521372687 +0530
+@@ -383,8 +383,15 @@
+ 		nvidia,num-codec-link = <4>;
+ 
+ 		nvidia,audio-routing =
+-			"x Headphone",	"x OUT",
+-			"x IN",		"x Mic",
++			"x MIC1N",	"x Mic",
++			"x MIC1P",	"x Mic",
++			"x MIC2N",	"x Mic",
++			"x MIC2P",	"x Mic",
++			"x MIC3N",	"x Mic",
++			"x MIC3P",	"x Mic",
++			"x MIC4N",	"x Mic",
++			"x MIC4P",	"x Mic",
++			"x Capture",	"x Mic",
+ 			"y Headphone",	"y OUT",
+ 			"y IN",		"y Mic",
+ 			"a IN",		"a Mic",
+@@ -394,19 +401,19 @@
+ 		mclk-fs = <256>;
+ 
+ 		hdr40_snd_link_i2s: i2s_dai_link1: nvidia,dai-link-1 {
+-			link-name = "spdif-dit-0";
++			link-name = "respeaker-4-mic-array"";
+ 			cpu-dai = <&tegra_i2s4>;
+-			codec-dai = <&spdif_dit0>;
++			codec-dai = <&ac108_a>;
+ 			cpu-dai-name = "I2S4";
+-			codec-dai-name = "dit-hifi";
+-			format = "i2s";
+-			bitclock-slave;
+-			frame-slave;
++			codec-dai-name = "ac10x-codec0";
++			format = "dsp_a";
++			bitclock-master;
++			frame-master;
+ 			bitclock-noninversion;
+ 			frame-noninversion;
+-			bit-format = "s16_le";
+-			srate = <48000>;
+-			num-channel = <2>;
++			bit-format = "s32_le";
++			srate = <16000>;
++			num-channel = <4>;
+ 			ignore_suspend;
+ 			name-prefix = "x";
+ 			status = "okay";
+@@ -754,7 +761,14 @@
+ 		};
+ 	};
+ 
+-	hdr40_i2c1: i2c@7000c400 { };
++	hdr40_i2c1: i2c@7000c400 {
++		ac108_a: ac10x-codec.1-003b@3b{
++			compatible = "x-power,ac108_0";
++			reg = <0x3b>;
++			data-protocol = <0>;
++			status = "okay";
++		};
++	};
+ 
+ 	clock@70110000 {
+ 		status = "okay";
+Only in NV_BSP_new/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs: ac101_regs.h
+diff -ur NV_BSP/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Kconfig NV_BSP_new/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Kconfig
+--- NV_BSP/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Kconfig	2019-12-10 12:10:27.000000000 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Kconfig	2020-03-30 13:34:29.758936175 +0530
+@@ -739,6 +739,10 @@
+ 	tristate "Freescale SGTL5000 CODEC"
+ 	depends on I2C
+ 
++config SND_SOC_AC108_CODEC
++       tristate
++       default y
++
+ config SND_SOC_SI476X
+ 	tristate
+ 
+diff -ur NV_BSP/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Makefile NV_BSP_new/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Makefile
+--- NV_BSP/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Makefile	2019-12-10 12:10:27.000000000 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/Makefile	2020-03-30 13:34:42.892748326 +0530
+@@ -1,5 +1,6 @@
+ snd-soc-88pm860x-objs := 88pm860x-codec.o
+ snd-soc-ab8500-codec-objs := ab8500-codec.o
++snd-soc-ac108-objs := ac101.o ac108.o
+ snd-soc-ac97-objs := ac97.o
+ snd-soc-ad1836-objs := ad1836.o
+ snd-soc-ad193x-objs := ad193x.o
+@@ -223,6 +224,7 @@
+ 
+ obj-$(CONFIG_SND_SOC_88PM860X)	+= snd-soc-88pm860x.o
+ obj-$(CONFIG_SND_SOC_AB8500_CODEC)	+= snd-soc-ab8500-codec.o
++obj-$(CONFIG_SND_SOC_AC108_CODEC)       += snd-soc-ac108.o
+ obj-$(CONFIG_SND_SOC_AC97_CODEC)	+= snd-soc-ac97.o
+ obj-$(CONFIG_SND_SOC_AD1836)	+= snd-soc-ad1836.o
+ obj-$(CONFIG_SND_SOC_AD193X)	+= snd-soc-ad193x.o
+diff -ur NV_BSP/Linux_for_Tegra/source/public/kernel/nvidia/sound/soc/tegra-alt/machine_drivers/tegra_machine_driver_mobile.c NV_BSP_new/Linux_for_Tegra/source/public/kernel/nvidia/sound/soc/tegra-alt/machine_drivers/tegra_machine_driver_mobile.c
+--- NV_BSP/Linux_for_Tegra/source/public/kernel/nvidia/sound/soc/tegra-alt/machine_drivers/tegra_machine_driver_mobile.c	2019-12-10 12:10:32.000000000 +0530
++++ NV_BSP_new/Linux_for_Tegra/source/public/kernel/nvidia/sound/soc/tegra-alt/machine_drivers/tegra_machine_driver_mobile.c	2020-03-30 13:34:50.244001501 +0530
+@@ -431,6 +431,17 @@
+ 		dai_params->formats = formats;
+ 	}
+ 
++       rtd = snd_soc_get_pcm_runtime(card, "respeaker-4-mic-array");
++       if (rtd) {
++               dai_params =
++               (struct snd_soc_pcm_stream *)rtd->dai_link->params;
++
++               dai_params->rate_min = srate;
++               dai_params->channels_min = channels;
++               dai_params->formats = formats;
++
++       }
++
+ 	return 0;
+ }
+ 
+@@ -537,6 +548,25 @@
+ }
+ #endif
+ 
++static int tegra_machine_respeaker_init(struct snd_soc_pcm_runtime *rtd)
++{
++       struct device *dev = rtd->card->dev;
++       int err;
++
++       /* ac108 codec driver hardcodes the freq as 24000000
++        * and source as PLL irrespective of args passed through
++        * this callback
++        */
++       err = snd_soc_dai_set_sysclk(rtd->codec_dai, 0, 24000000,
++                                    SND_SOC_CLOCK_IN);
++       if (err) {
++               dev_err(dev, "failed to set ac108 sysclk!\n");
++               return err;
++       }
++
++       return 0;
++}
++
+ static int tegra_machine_fepi_init(struct snd_soc_pcm_runtime *rtd)
+ {
+ 	struct device *dev = rtd->card->dev;
+@@ -611,6 +641,8 @@
+ 			dai_links[i].init = tegra_machine_rt565x_init;
+ 		else if (strstr(dai_links[i].name, "fe-pi-audio-z-v2"))
+ 			dai_links[i].init = tegra_machine_fepi_init;
++               else if (strstr(dai_links[i].name, "respeaker-4-mic-array"))
++                       dai_links[i].init = tegra_machine_respeaker_init;
+ 	}
+ 
+ 	return 0;
