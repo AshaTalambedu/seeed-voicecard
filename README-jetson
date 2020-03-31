@@ -1,4 +1,4 @@
-NOTE: Only Respeaker 4-Mic Array (one codec instance at a time) is verified on Jetson platform using below guidelines
+NOTE: Only Respeaker Circular 4-Mic Array (one codec instance at a time) is verified on Jetson platform using below guidelines
 
 List of files used from jetson-respeaker-4mic-array-compatible branch of seeed-voicecard repo for Integrating Respeaker 4-Mic Array with Jetson Platforms:
 

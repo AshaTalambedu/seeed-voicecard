@@ -1236,7 +1236,7 @@ int ac101_audio_startup(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-#if _MASTER_MULTI_CODEC == _MASTER_AC101
+#if 0
 static int ac101_set_clock(int y_start_n_stop) {
 	int r;
 
