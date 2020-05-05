@@ -29,7 +29,7 @@ diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t18x/comm
 +			"x MIC3P",              "x Mic",
 +			"x MIC4N",              "x Mic",
 +			"x MIC4P",              "x Mic",
-+			"x Capture",            "x Mic";
++			"x Capture",            "x Mic",
  			"y Headphone",		"y OUT",
  			"y IN",			"y Mic",
  			"z Headphone",		"z OUT",
@@ -90,7 +90,7 @@ diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t19x/gale
 +			"y MIC3P",              "y Mic",
 +			"y MIC4N",              "y Mic",
 +			"y MIC4P",              "y Mic",
-+			"y Capture",            "y Mic";
++			"y Capture",            "y Mic",
  			"z Headphone",          "z OUT",
  			"z IN",                 "z Mic",
  			"m Headphone",          "m OUT",
@@ -146,7 +146,7 @@ diff -ur NV_BSP/Linux_for_Tegra/source/public/hardware/nvidia/platform/t210/jets
 +			"x MIC3P",              "x Mic",
 +			"x MIC4N",              "x Mic",
 +			"x MIC4P",              "x Mic",
-+			"x Capture",            "x Mic";
++			"x Capture",            "x Mic",
  			"y Headphone",		"y OUT",
  			"y IN",			"y Mic",
  			"l Headphone",		"l OUT",
