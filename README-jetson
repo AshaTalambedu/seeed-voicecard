@@ -16,7 +16,7 @@ List of files used from jetson-respeaker-4mic-array-compatible branch of seeed-v
 	├── ac108.c
 	├── ac108.h
 	├── ac10x.h
-	├── jetson_BSP32.3.patch
+	├── jetson_BSP32.3.patch/agx_nx_tx2_BSP32.4.2.patch/nano_tx1_BSP32.4.2.patch
 	├── README-jetson
 	└── sound-compatible-4.18.h
 
@@ -24,12 +24,14 @@ Steps for Integrating Respeaker Circular 4-Mic Array with Jetson Platforms
 
 1.  Download relevant kernel sources for modification
 
-2.  Patch the kernel source as per instructions below
+2.  Patch the kernel source as per instructions below manually
 
     a. Refer the patch provided as part of the repo for patching kernel
 
         Patch for L4T 32.3.1 (part of JetPack 4.3) - jetson_BSP32.3.patch
         NOTE: Make sure to patch platform relevant DTs.
+	Patch for L4T 32.4.2 on Jetson Xavier NX/ TX2/ AGX Xavier - agx_nx_tx2_BSP32.4.2.patch
+	Patch for L4T 32.4.2 on Jetson TX1 / Nano - nano_tx1_BSP32.4.2.patch
 
     b. Copy following files from jetson-respeaker-4mic-array-compatible branch
        of seeed-voicecard repo to kernel source directory path:
@@ -42,11 +44,15 @@ Steps for Integrating Respeaker Circular 4-Mic Array with Jetson Platforms
         ac10x.h
         sound-compatible-4.18.h
 
-2. Compile kernel and this would generate updated kernel and kernel-dtb images
+        or alternatively patch with the help of script provided
+	Example: bash patch.sh  <absolute_path_to_public_sources.tbz2> <name_of_working_directory> <absolute_path_to_patch_file>
+	NOTE: Automating patching works for 32.4.2 
 
-3. Flash updated kernel and kernel-dtb partitions and reboot
+3. Compile kernel and this would generate updated kernel and kernel-dtb images
 
-4. Necessary pinmux configuration has to be done after reboot 
+4. Flash updated kernel and kernel-dtb partitions and reboot
+
+5. Necessary pinmux configuration has to be done after reboot 
 
 	Launch Jetson-IO (sudo /opt/nvidia/jetson-io/jetson-io.py)
 	Select “Configure 40-pin expansion header”
@@ -54,7 +60,7 @@ Steps for Integrating Respeaker Circular 4-Mic Array with Jetson Platforms
 	Select “Back”
 	Select “Save and reboot to reconfigure pins”
 
-5. Below script can be used to record 4 channel audio data
+6. Below script can be used to record 4 channel audio data
 
 	amixer -c 1 cset name="ADMAIF9 Mux" "I2S1"
 	amixer -c 1 cset name="I2S1 codec frame mode" "dsp-a"
