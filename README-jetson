@@ -48,12 +48,11 @@ Steps for Integrating Respeaker Circular 4-Mic Array with Jetson Platforms
 
 4. Necessary pinmux configuration has to be done after reboot 
 
-	Launch Jetson-IO (sudo /opt/nvidia/jetson-io/jetson-io.py)
-	Select “Configure 40-pin expansion header”
-	Select “i2s” function
-	Select “Back”
-	Select “Save and reboot to reconfigure pins”
-
+	sudo /opt/nvidia/jetson-io/config-by-function.py -o dtb i2s1 aud_mclk
+	sudo reboot
+	
+	NOTE: I2S Instance and clk on 40-pin header used depends on the Jetson platform being used.
+	
 5. Below script can be used to record 4 channel audio data
 
 	amixer -c 1 cset name="ADMAIF9 Mux" "I2S1"
