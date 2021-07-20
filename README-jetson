@@ -1,0 +1,65 @@
+This is same as  README-jetson-4mic-circular-array-support file
+NOTE: Only Respeaker Circular 4-Mic Array (one codec instance only) is verified on Jetson platform using below guidelines
+
+References:
+L4T Sources: https://developer.nvidia.com/embedded/downloads
+L4T Documentation Archive: https://docs.nvidia.com/jetson/archives/
+Kernel Customisation (L4T 32.3.1):
+        https://docs.nvidia.com/jetson/archives/l4t-archived/l4t-3231/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fkernel_custom.html%23
+Flashing support (L4T 32.3.1):
+        https://docs.nvidia.com/jetson/archives/l4t-archived/l4t-3231/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Fflashing.html%23
+
+List of files used from jetson-respeaker-4mic-array-compatible branch of seeed-voicecard repo for Integrating Respeaker 4-Mic Circular Array with Jetson Platforms:
+
+	seeed-voicecard/
+	├── ac101.c
+	├── ac101_regs.h
+	├── ac108.c
+	├── ac108.h
+	├── ac10x.h
+	├── jetson_BSP32.3.patch
+	├── README-jetson-4mic-circular-array-support
+	└── sound-compatible-4.18.h
+
+Steps for Integrating Respeaker Circular 4-Mic Array with Jetson Platforms
+
+1.  Download relevant kernel sources for modification
+
+2.  Patch the kernel source as per instructions below
+
+    a. Refer the patch provided as part of the repo for patching kernel
+
+        Patch for L4T 32.3.1 (part of JetPack 4.3) - jetson_BSP32.3.patch
+        NOTE: Make sure to patch platform relevant DTs.
+
+    b. Copy following files from jetson-respeaker-4mic-array-compatible branch
+       of seeed-voicecard repo to kernel source directory path:
+       "Linux_for_Tegra/source/public/kernel/kernel-4.9/sound/soc/codecs/"
+
+        ac108.h
+        ac108.c
+        ac101.c
+        ac101_regs.h
+        ac10x.h
+        sound-compatible-4.18.h
+
+2. Compile kernel and this would generate updated kernel and kernel-dtb images
+
+3. Flash updated kernel and kernel-dtb partitions and reboot
+
+4. Necessary pinmux configuration has to be done after reboot 
+
+	sudo /opt/nvidia/jetson-io/config-by-function.py -o dtb i2s1
+	sudo reboot
+	
+	NOTE: I2S Instance and clk on 40-pin header used depends on the Jetson platform being used.
+	
+5. Below script can be used to record 4 channel audio data
+
+	amixer -c 1 cset name="ADMAIF9 Mux" "I2S1"
+	amixer -c 1 cset name="I2S1 codec frame mode" "dsp-a"
+	amixer -c 1 cset name="I2S1 codec master mode" "cbm-cfm"
+	amixer -c 1 cset name="I2S1 fsync width" 0
+	arecord -D hw:1,8 -r 16000 -c 4 -f S32_LE -t wav -d 10 ./out.wav &
+
+	NOTE: I2S Instance used depends on the Jetson platform being used.
